@@ -26,7 +26,7 @@ class EntityManager{
         return $this->db;
     }
     
-    public function getRespository(string $repositoryName){
+    public function getRepository(string $repositoryName){
 
         if($this->repositories->exists($repositoryName)){
             return $this->repositories->get($repositoryName);
@@ -53,6 +53,10 @@ class EntityManager{
     public function createQueryBuilder() : QueryBuilder{
         return new QueryBuilder($this);
     }
+    
+    public function query(string $sql, array $parameters = []){
+        return new Query($this->getDatabase(), $sql, $parameters);
+    }
 
     public function persist($entity){
         $entityContext = new EntityContext($entity);
@@ -69,7 +73,7 @@ class EntityManager{
         foreach($this->entities as $entityContext){
             $metadata = $this->metaCollection->get($entityContext->getEntityName());
             $entity = $entityContext->getEntity();
-            
+
             $properties = Obj::from($entity)->getProperties();
             $data = [];
 

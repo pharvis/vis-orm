@@ -9,7 +9,7 @@ class EntityMetaReader{
     
     public function getEntityMeta(string $entityName) : EntityMetaData{
         $reflect = new \ReflectionClass($entityName);
-        
+
         $segments = Str::set($reflect->getDocComment())->split(PHP_EOL);
         $array = new Arr();
         

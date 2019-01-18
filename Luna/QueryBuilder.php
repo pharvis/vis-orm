@@ -31,29 +31,42 @@ class QueryBuilder{
         return $this;
     }
     
+    public function whereIn(string $field, array $criteria){
+        $this->sql->addIndex(new Expr\WhereIn($field, $criteria));
+        return $this;
+    }
+    
     public function addParameter($name, $value){
         $this->parameters[$name] = $value;
         return $this;
     }
-
-    public function execute(){
+    
+    public function addParameters(array $parameters){
+        $this->parameters = array_merge($this->parameters, $parameters);
+        return $this;
+    }
+    
+    public function sql(){
         $query = new Str('');
         $hasWhere = false;
         
         foreach($this->sql as $expr){
             if($expr instanceof Expr\Where){
-                
                 if(false == $hasWhere){
                     $query->append('WHERE ');
                     $expr->removeOperator();
                 }
                 $query->append($expr);
                 $hasWhere = true;
+                $this->addParameters($expr->getParameters());
             }else{
                 $query->append($expr);
             }
-            
         }
-        return new Query($this->em->getDatabase(), $query, $this->parameters);
+        return (string)$query;
+    }
+
+    public function execute(){ 
+        return new Query($this->em->getDatabase(), $this->sql(), $this->parameters);
     }
 }

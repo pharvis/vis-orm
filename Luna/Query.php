@@ -18,10 +18,17 @@ class Query{
     
     public function single(string $entityName){
         $row = $this->db->query($this->sql, $this->parameters)->fetch(\PDO::FETCH_ASSOC); 
-        return $this->toEntity($entityName, $row);
+        if($row){
+            return $this->toEntity($entityName, $row);
+        }
     }
     
-    public function toList(string $entityName) : array{
+    public function toList(string $entityName = '') : array{
+        
+        if(!$entityName){
+            return $this->db->query($this->sql, $this->parameters)->fetchAll(\PDO::FETCH_OBJ);
+        }
+        
         $rows = $this->db->query($this->sql, $this->parameters)->fetchAll(\PDO::FETCH_ASSOC); 
         
         foreach($rows as $idx=> $row){

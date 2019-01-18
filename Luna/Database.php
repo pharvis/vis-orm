@@ -20,7 +20,7 @@ class Database extends \PDO{
             $stm->execute($params);
             return $stm;
         }catch (\PDOException $e){
-            throw new QueryException($e->getMessage());
+            throw new QueryException($e->getMessage(), $e->getCode());
         }
     }
     

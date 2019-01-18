@@ -9,7 +9,7 @@ class EntityRepository{
     
     public function __construct(EntityManager $em, string $entityName){
         $this->em = $em;
-        
+
         $metaCollection = $this->em->getMetaCollection();
         
         if(!$metaCollection->exists($entityName)){
@@ -53,16 +53,18 @@ class EntityRepository{
             ->select('*')
             ->from($this->entityMeta->getTableName());
         
-            foreach($criteria as $column => $value){
-                $qb->andWhere($column.'=:'.$column);
-                $qb->addParameter($column, $value);
-            }
-        
+        foreach($criteria as $column => $value){
+            $qb->andWhere($column.'=:'.$column);
+            $qb->addParameter($column, $value);
+        }
+
         $entity = $qb->execute()
             ->single($this->entityMeta->getEntityName());
         
-        $this->em->persist($entity)->setState(EntityContext::STATE_UPDATE);
-        return $entity;
+        if($entity){
+            $this->em->persist($entity)->setState(EntityContext::STATE_UPDATE);
+            return $entity;
+        }
     }
     
     public function findBy(array $criteria){
@@ -70,10 +72,10 @@ class EntityRepository{
             ->select('*')
             ->from($this->entityMeta->getTableName());
         
-            foreach($criteria as $column => $value){
-                $qb->andWhere($column.'=:'.$column);
-                $qb->addParameter($column, $value);
-            }
+        foreach($criteria as $column => $value){
+            $qb->andWhere($column.'=:'.$column);
+            $qb->addParameter($column, $value);
+        }
         
         $entities = $qb->execute()
             ->toList($this->entityMeta->getEntityName());
